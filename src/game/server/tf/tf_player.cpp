@@ -680,7 +680,7 @@ BEGIN_ENT_SCRIPTDESC( CTFPlayer, CBaseMultiplayerPlayer , "Team Fortress 2 Playe
 	DEFINE_SCRIPTFUNC_WRAPPED( Weapon_SetLast, "" )
 	DEFINE_SCRIPTFUNC_WRAPPED( GetLastWeapon, "" )
 	DEFINE_SCRIPTFUNC_WRAPPED( EquipWearableViewModel, "" )
-
+	DEFINE_SCRIPTFUNC_WRAPPED(GenerateAndWearItem, "Give me an item!")
 	DEFINE_SCRIPTFUNC_WRAPPED( IsFakeClient, "" )
 	DEFINE_SCRIPTFUNC_WRAPPED( GetBotType, "" )
 	DEFINE_SCRIPTFUNC_WRAPPED( IsBotOfType, "" )

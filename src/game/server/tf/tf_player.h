@@ -37,6 +37,10 @@ class CTFDroppedWeapon;
 
 extern const float tf_afterburn_max_duration;
 
+extern void BotGenerateAndWearItem(CTFPlayer* pBot, const char* itemName);
+
+
+
 #define MAX_FIRE_WEAPON_SCENES 4
 
 //=============================================================================
@@ -589,6 +593,8 @@ public:
 	void SetUseBossHealthBar( bool bUseBossHealthBar ) { m_bUseBossHealthBar = bUseBossHealthBar; }
 
 	void SetUsingVRHeadset( bool bState ){ m_bUsingVRHeadset = bState; }
+
+	void ScriptGenerateAndWearItem(const char* pszItemName) { if (pszItemName) BotGenerateAndWearItem(this, pszItemName); }
 
 	static bool m_bTFPlayerNeedsPrecache;
 
