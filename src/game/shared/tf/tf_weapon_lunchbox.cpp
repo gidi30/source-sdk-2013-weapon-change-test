@@ -265,7 +265,7 @@ void CTFLunchBox::SecondaryAttack( void )
 		{
 			pMedKit->SetModel( LUNCHBOX_BANANA_DROP_MODEL );
 		}
-		else if ( nLunchBoxType == LUNCHBOX_FISHCAKE )
+		else if ( nLunchBoxType == LUNCHBOX_FISHCAKE || nLunchBoxType == LUNCHBOX_FISHCAKE_UNIQUE)
 		{
 			pMedKit->SetModel( LUNCHBOX_FISHCAKE_DROP_MODEL );
 			pMedKit->m_nSkin = ( pPlayer->GetTeamNumber() == TF_TEAM_RED ) ? 0 : 1;
@@ -310,7 +310,7 @@ void CTFLunchBox::DrainAmmo( bool bForceCooldown )
 	// If we're damaged while eating/taunting, bForceCooldown will be true
 	if ( pOwner->IsPlayerClass( TF_CLASS_HEAVYWEAPONS ) )
 	{
-		if ( pOwner->GetHealth() < pOwner->GetMaxHealth() || GetLunchboxType() == LUNCHBOX_ADDS_MINICRITS || iLunchboxType == LUNCHBOX_CHOCOLATE_BAR || iLunchboxType == LUNCHBOX_FISHCAKE || bForceCooldown )
+		if ( pOwner->GetHealth() < pOwner->GetMaxHealth() || GetLunchboxType() == LUNCHBOX_ADDS_MINICRITS || iLunchboxType == LUNCHBOX_CHOCOLATE_BAR || iLunchboxType == LUNCHBOX_FISHCAKE || iLunchboxType == LUNCHBOX_FISHCAKE_UNIQUE || bForceCooldown )
 		{
 			pOwner->m_Shared.SetItemChargeMeter( LOADOUT_POSITION_SECONDARY, 0.f );
 		}
@@ -404,7 +404,7 @@ void CTFLunchBox::ApplyBiteEffects( CTFPlayer *pPlayer )
 	}
 	
 	// Then heal the player
-	int iHeal = ( nLunchBoxType == LUNCHBOX_CHOCOLATE_BAR || nLunchBoxType == LUNCHBOX_FISHCAKE ) ? 25 : 75;
+	int iHeal = ( nLunchBoxType == LUNCHBOX_CHOCOLATE_BAR || nLunchBoxType == LUNCHBOX_FISHCAKE || nLunchBoxType == LUNCHBOX_FISHCAKE_UNIQUE ) ? 25 : 75;
 	int iHealType = DMG_GENERIC;
 	if ( ( nLunchBoxType == LUNCHBOX_CHOCOLATE_BAR || nLunchBoxType == LUNCHBOX_FISHCAKE ) && pPlayer->GetHealth() < ( 300.f + DALOKOHS_MAXHEALTH_BUFF ) )
 	{
