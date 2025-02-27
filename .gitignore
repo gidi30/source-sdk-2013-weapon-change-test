@@ -502,5 +502,3 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
-/src/game/shared/tf/tf_weapon_lunchbox.cpp
-/src/game/shared/tf/tf_weapon_lunchbox.h
