@@ -62,8 +62,8 @@ BEGIN_DATADESC( CTFLunchBox )
 END_DATADESC()
 #endif
 
-#define LUNCHBOX_DROP_MODEL  "models/items/plate.mdl"
-#define LUNCHBOX_STEAK_DROP_MODEL  "models/workshop/weapons/c_models/c_buffalo_steak/plate_buffalo_steak.mdl"
+#define LUNCHBOX_STEAK_DROP_MODEL  "models/items/plate.mdl"
+#define LUNCHBOX_DROP_MODEL  "models/workshop/weapons/c_models/c_buffalo_steak/plate_buffalo_steak.mdl"
 #define LUNCHBOX_ROBOT_DROP_MODEL  "models/items/plate_robo_sandwich.mdl"
 #define LUNCHBOX_FESTIVE_DROP_MODEL  "models/items/plate_sandwich_xmas.mdl"
 #define LUNCHBOX_CHOCOLATE_BAR_DROP_MODEL		"models/workshop/weapons/c_models/c_chocolate/plate_chocolate.mdl"
