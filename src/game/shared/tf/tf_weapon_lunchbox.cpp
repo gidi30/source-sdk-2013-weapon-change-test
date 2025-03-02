@@ -359,6 +359,14 @@ void CTFLunchBox::Detach( void )
 			pOwner->RemoveCustomAttribute( "hidden maxhealth non buffed" );
 		}
 	}
+	else if (GetLunchboxType() == LUNCHBOX_FISHCAKE_UNIQUE)
+	{
+		CTFPlayer* pOwner = ToTFPlayer(GetPlayerOwner());
+		if (pOwner)
+		{
+			pOwner->m_Shared.RemoveCond(TF_COND_LUNCHBOX_HEALOVERTIME);
+		}
+	}
 #endif
 
 	BaseClass::Detach();
@@ -401,6 +409,12 @@ void CTFLunchBox::ApplyBiteEffects( CTFPlayer *pPlayer )
 		pPlayer->m_Shared.SetBiteEffectWasApplied();
 
 		return;
+	}
+	else if (nLunchBoxType == LUNCHBOX_FISHCAKE_UNIQUE)
+	{
+		static const float s_fFishCakeDuration = 30.0f;
+		pPlayer->m_Shared.AddCond(TF_COND_LUNCHBOX_HEALOVERTIME, s_fFishCakeDuration, this);
+		pPlayer->m_Shared.SetBiteEffectWasApplied();
 	}
 	
 	// Then heal the player

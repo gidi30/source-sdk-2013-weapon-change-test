@@ -2192,6 +2192,9 @@ void CTFPlayerShared::OnConditionRemoved( ETFCond eCond )
 		OnRemoveHalloweenHellHeal();
 		break;
 
+	case TF_COND_LUNCHBOX_HEALOVERTIME:
+		OnRemoveLunchboxHealovertime();
+		break;
 
 	default:
 		break;
@@ -4005,6 +4008,15 @@ void CTFPlayerShared::OnRemoveTaunting( void )
 			// Safety net
 			RemoveCond( TF_COND_ENERGY_BUFF );
 			RemoveCond( TF_COND_CANNOT_SWITCH_FROM_MELEE );
+		}
+	}
+	else if (m_bBiteEffectWasApplied && InCond(TF_COND_LUNCHBOX_HEALOVERTIME))
+	{
+		CBaseEntity* provider = GetConditionProvider(TF_COND_LUNCHBOX_HEALOVERTIME);
+		if (provider)
+		{
+			Heal(provider, 8.0f, 1.0f, 1.0f);
+			m_hHealLunchbox = provider;
 		}
 	}
 
@@ -7598,6 +7610,17 @@ void CTFPlayerShared::OnRemoveCondGas( void )
 			view->SetScreenOverlayMaterial( NULL );
 		}
 	}
+#endif // CLIENT_DLL
+}
+
+void CTFPlayerShared::OnRemoveLunchboxHealovertime(void)
+{
+#ifndef CLIENT_DLL
+
+	CBaseEntity *pProvider = m_hHealLunchbox;
+	if (pProvider)
+		StopHealing(pProvider);
+
 #endif // CLIENT_DLL
 }
 

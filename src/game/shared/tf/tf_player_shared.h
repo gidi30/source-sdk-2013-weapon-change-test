@@ -901,7 +901,7 @@ private:
 	void OnRemoveCondGas( void );
 	void OnRemoveRocketPack( void );
 	void OnRemoveBurningPyro( void );
-	
+	void OnRemoveLunchboxHealovertime(void);
 
 	// Starting a new trend, putting Add and Remove next to each other
 	void OnAddCondParachute( void );
@@ -1039,6 +1039,7 @@ private:
 	float					m_flFlameBurnTime;
 	float					m_flAfterburnDuration;
 
+	CHandle<CBaseEntity>	m_hHealLunchbox;
 	// Bleeding
 	struct bleed_struct_t
 	{
