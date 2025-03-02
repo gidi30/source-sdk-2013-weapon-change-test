@@ -286,6 +286,41 @@ void CTFKnife::PrimaryAttack( void )
 			pPlayer->m_Shared.HealthKitPickupEffects( iDeltaHealth );
 		}
 	}
+	int ibackstabcloak = 0;
+	CALL_ATTRIB_HOOK_INT(ibackstabcloak, cloak_on_backstab);
+	if (bSuccessfulBackstab && ibackstabcloak != 0)
+	{
+		pPlayer->m_Shared.AddToSpyCloakMeter(ibackstabcloak, true);
+	}
+
+	int imarkfordeathonbackstab = 0;
+	CALL_ATTRIB_HOOK_INT(imarkfordeathonbackstab, mod_mark_on_backstab);
+	if (bSuccessfulBackstab && imarkfordeathonbackstab > 0)
+	{
+		pPlayer->m_Shared.AddCond(TF_COND_MARKEDFORDEATH_SILENT, imarkfordeathonbackstab);
+		//find enemies in radius
+		//squared radius because appearently comparing the squared distance is faster
+		float flradiussqr = KNIFEMARKFORDEATHRADIUS * KNIFEMARKFORDEATHRADIUS;
+		CBaseEntity* pListOfEntities[MAX_PLAYERS_ARRAY_SAFE];
+		int iEntities = UTIL_EntitiesInSphere(pListOfEntities, ARRAYSIZE(pListOfEntities), pPlayer->GetAbsOrigin(), KNIFEMARKFORDEATHRADIUS, FL_CLIENT | FL_NPC);
+		for (int i = 0; i < iEntities; ++i)
+		{
+			CTFPlayer* pTarget = ToTFPlayer(pListOfEntities[i]);
+			if (pTarget)
+			{
+				// CEntitySphereQuery actually does a box test. So we need to make sure the distance is less than the radius first.
+				Vector vecPos;
+				pTarget->CollisionProp()->CalcNearestPoint(pPlayer->GetAbsOrigin(), &vecPos);
+				if ((pTarget->GetAbsOrigin() - vecPos).LengthSqr() > flradiussqr)
+					continue;
+				if (pTarget->GetTeam() != GetTeam())
+				{
+					pTarget->m_Shared.AddCond(TF_COND_MARKEDFORDEATH_SILENT, imarkfordeathonbackstab,pPlayer);
+				}
+			}
+		}
+	}
+
 #endif // GAME_DLL
 }
 

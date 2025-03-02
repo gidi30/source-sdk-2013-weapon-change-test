@@ -15,6 +15,8 @@
 #define CTFKnife C_TFKnife
 #endif
 
+#define KNIFEMARKFORDEATHRADIUS 100.0f
+
 // Knives use the "set_weapon_mode" attribute to define which type of knife they are
 // Keep this enum in sync with the values used for set_weapon_mode.
 enum knife_weapontypes_t
