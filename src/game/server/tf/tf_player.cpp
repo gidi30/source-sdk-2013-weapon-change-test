@@ -1220,7 +1220,7 @@ void CTFPlayer::SetGrapplingHookTarget( CBaseEntity *pTarget, bool bShouldBleed 
 //-----------------------------------------------------------------------------
 bool CTFPlayer::CanBeForcedToLaugh( void )
 {
-	if ( TFGameRules() && TFGameRules()->IsMannVsMachineMode() && IsBot() && ( GetTeamNumber() == TF_TEAM_PVE_INVADERS ) )
+	if ( (TFGameRules() && TFGameRules()->IsMannVsMachineMode() && IsBot() && ( GetTeamNumber() == TF_TEAM_PVE_INVADERS )) || m_Shared.InCond(TF_COND_ROBOT_TRANSFORMATION) )
 		return false;
 
 	return true;
@@ -3106,6 +3106,7 @@ void CTFPlayer::PrecacheTFPlayer()
 	PrecacheScriptSound( "Weapon_Mantreads.Impact" );
 
 	// Precache footstep override sounds.
+	PrecacheScriptSound("MVM.BotStep");
 	PrecacheScriptSound( "cleats_conc.StepLeft" );
 	PrecacheScriptSound( "cleats_conc.StepRight" );
 	PrecacheScriptSound( "cleats_dirt.StepLeft" );
@@ -10856,7 +10857,7 @@ int CTFPlayer::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 			vDamagePos = WorldSpaceCenter();
 		}
 
-		if ( TFGameRules() && TFGameRules()->IsMannVsMachineMode() && GetTeamNumber() == TF_TEAM_PVE_INVADERS )
+		if ( (TFGameRules() && TFGameRules()->IsMannVsMachineMode() && GetTeamNumber() == TF_TEAM_PVE_INVADERS) || m_Shared.InCond(TF_COND_ROBOT_TRANSFORMATION) )
 		{
 			if ( ( IsMiniBoss() && static_cast< float >( GetHealth() ) / GetMaxHealth() > 0.3f ) || realDamage < 50 )
 			{
@@ -15283,7 +15284,7 @@ void CTFPlayer::DeathSound( const CTakeDamageInfo &info )
 
 	int nDeathSoundOffset = DEATH_SOUND_FIRST;
 
-	if ( TFGameRules() && TFGameRules()->IsMannVsMachineMode() && GetTeamNumber() == TF_TEAM_PVE_INVADERS )
+	if ( (TFGameRules() && TFGameRules()->IsMannVsMachineMode() && GetTeamNumber() == TF_TEAM_PVE_INVADERS) || m_Shared.InCond(TF_COND_ROBOT_TRANSFORMATION) )
 	{
 		nDeathSoundOffset = IsMiniBoss() ? DEATH_SOUND_GIANT_MVM_FIRST : DEATH_SOUND_MVM_FIRST;
 	}
@@ -15342,7 +15343,7 @@ void CTFPlayer::DeathSound( const CTakeDamageInfo &info )
 //-----------------------------------------------------------------------------
 const char* CTFPlayer::GetSceneSoundToken( void )
 {
-	if ( TFGameRules() && TFGameRules()->IsMannVsMachineMode() && GetTeamNumber() == TF_TEAM_PVE_INVADERS )
+	if ( (TFGameRules() && TFGameRules()->IsMannVsMachineMode() && GetTeamNumber() == TF_TEAM_PVE_INVADERS) || m_Shared.InCond(TF_COND_ROBOT_TRANSFORMATION) )
 	{
 		if ( IsMiniBoss() )
 		{

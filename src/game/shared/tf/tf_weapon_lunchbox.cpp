@@ -246,7 +246,7 @@ void CTFLunchBox::SecondaryAttack( void )
 		{
 			pMedKit->SetModel( LUNCHBOX_STEAK_DROP_MODEL );
 		}
-		else if ( nLunchBoxType == LUNCHBOX_STANDARD_ROBO )
+		else if ( nLunchBoxType == LUNCHBOX_STANDARD_ROBO || nLunchBoxType == LUNCHBOX_ROBO_UNIQUE )
 		{
 			pMedKit->SetModel( LUNCHBOX_ROBOT_DROP_MODEL );
 			pMedKit->m_nSkin = ( pPlayer->GetTeamNumber() == TF_TEAM_RED ) ? 0 : 1;
@@ -310,7 +310,7 @@ void CTFLunchBox::DrainAmmo( bool bForceCooldown )
 	// If we're damaged while eating/taunting, bForceCooldown will be true
 	if ( pOwner->IsPlayerClass( TF_CLASS_HEAVYWEAPONS ) )
 	{
-		if ( pOwner->GetHealth() < pOwner->GetMaxHealth() || GetLunchboxType() == LUNCHBOX_ADDS_MINICRITS || iLunchboxType == LUNCHBOX_CHOCOLATE_BAR || iLunchboxType == LUNCHBOX_FISHCAKE || iLunchboxType == LUNCHBOX_FISHCAKE_UNIQUE || bForceCooldown )
+		if ( pOwner->GetHealth() < pOwner->GetMaxHealth() || GetLunchboxType() == LUNCHBOX_ADDS_MINICRITS || iLunchboxType == LUNCHBOX_CHOCOLATE_BAR || iLunchboxType == LUNCHBOX_FISHCAKE || iLunchboxType == LUNCHBOX_FISHCAKE_UNIQUE || iLunchboxType == LUNCHBOX_ROBO_UNIQUE || bForceCooldown )
 		{
 			pOwner->m_Shared.SetItemChargeMeter( LOADOUT_POSITION_SECONDARY, 0.f );
 		}
@@ -367,6 +367,14 @@ void CTFLunchBox::Detach( void )
 			pOwner->m_Shared.RemoveCond(TF_COND_LUNCHBOX_HEALOVERTIME);
 		}
 	}
+	else if (GetLunchboxType() == LUNCHBOX_ROBO_UNIQUE)
+	{
+		CTFPlayer* pOwner = ToTFPlayer(GetPlayerOwner());
+		if (pOwner)
+		{
+			pOwner->m_Shared.RemoveCond(TF_COND_ROBOT_TRANSFORMATION);
+		}
+	}
 #endif
 
 	BaseClass::Detach();
@@ -414,6 +422,10 @@ void CTFLunchBox::ApplyBiteEffects( CTFPlayer *pPlayer )
 	{
 		static const float s_fFishCakeDuration = 30.0f;
 		pPlayer->m_Shared.AddCond(TF_COND_LUNCHBOX_HEALOVERTIME, s_fFishCakeDuration, this);
+		pPlayer->m_Shared.SetBiteEffectWasApplied();
+	}
+	else if (nLunchBoxType == LUNCHBOX_ROBO_UNIQUE)
+	{
 		pPlayer->m_Shared.SetBiteEffectWasApplied();
 	}
 	

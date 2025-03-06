@@ -2306,6 +2306,7 @@ m_bIsPackBundle( false ),
 m_pOwningPackBundle( NULL ),
 m_bIsPackItem( false ),
 m_bBaseItem( false ),
+m_bAlwaysInInventory( false ),
 m_pszItemLogClassname( NULL ),
 m_pszItemIconClassname( NULL ),
 m_pszDatabaseAuditTable( NULL ),
@@ -3177,6 +3178,7 @@ bool CEconItemDefinition::BInitFromKV( KeyValues *pKVItem, CUtlVector<CUtlString
 	m_bHidden = m_pKVItem->GetInt( "hidden", 0 ) != 0;
 	m_bShouldShowInArmory = m_pKVItem->GetInt( "show_in_armory", 0 ) != 0;
 	m_bBaseItem = m_pKVItem->GetInt( "baseitem", 0 ) != 0;
+	m_bAlwaysInInventory = m_pKVItem->GetInt("always_in_inventory", 0) != 0;
 	m_pszItemLogClassname = m_pKVItem->GetString( "item_logname", NULL );
 	m_pszItemIconClassname = m_pKVItem->GetString( "item_iconname", NULL );
 	m_pszDatabaseAuditTable = m_pKVItem->GetString( "database_audit_table", NULL );
@@ -4822,7 +4824,7 @@ bool CEconItemSchema::BInitSchema( KeyValues *pKVRawDefinition, CUtlVector<CUtlS
 #ifdef GAME_DLL
 	DevMsg( "*********Server InitSchema time = %f\n", flTotalTime );
 #elif CLIENT_DLL
-	DevMsg( "*********Client InitSchema time = %f\n", flTotalTime );
+	DevMsg( "*********testClient InitSchema time = %f\n", flTotalTime );
 #else // GC_DLL
 	DevMsg( "*********GC InitSchema time = %f\n", flTotalTime );
 #endif
@@ -5342,6 +5344,11 @@ bool CEconItemSchema::BInitItems( KeyValues *pKVItems, CUtlVector<CUtlString> *p
 				if ( pItemDef->IsBaseItem() )
 				{
 					m_mapBaseItems.Insert( nItemIndex, pItemDef );
+				}
+
+				if (pItemDef->IsAlwaysInInventory())
+				{
+					m_mapAlwaysInInventory.Insert(nItemIndex, pItemDef);
 				}
 
 				// Cache off bundles for the link phase below.

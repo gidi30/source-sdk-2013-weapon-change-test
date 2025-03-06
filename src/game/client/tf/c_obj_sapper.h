@@ -27,6 +27,8 @@ public:
 	virtual void ClientThink( void );
 	virtual void OnDataChanged( DataUpdateType_t type );
 
+	virtual bool ValidateEntityAttachedToPlayer(bool& bShouldRetry);
+
 	virtual bool	IsHostileUpgrade( void ) { return true; }
 
 	float			GetReversesBuildingConstructionSpeed( void );

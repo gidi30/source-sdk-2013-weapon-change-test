@@ -49,6 +49,11 @@ float C_ObjectSapper::GetReversesBuildingConstructionSpeed( void )
 
 	return flReverseSpeed;
 }
-
+// allow parenting text to players
+bool C_ObjectSapper::ValidateEntityAttachedToPlayer(bool& bShouldRetry)
+{
+	bShouldRetry = false;
+	return true;
+}
 IMPLEMENT_CLIENTCLASS_DT(C_ObjectSapper, DT_ObjectSapper, CObjectSapper)
 END_RECV_TABLE()

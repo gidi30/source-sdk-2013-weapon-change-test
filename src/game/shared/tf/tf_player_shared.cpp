@@ -1848,6 +1848,9 @@ void CTFPlayerShared::OnConditionAdded( ETFCond eCond )
 		OnAddHalloweenHellHeal();
 		break;
 
+	case TF_COND_ROBOT_TRANSFORMATION:
+		OnAddCondRobotTransformation();
+		break;
 
 	default:
 		break;
@@ -2196,6 +2199,10 @@ void CTFPlayerShared::OnConditionRemoved( ETFCond eCond )
 		OnRemoveLunchboxHealovertime();
 		break;
 
+	case TF_COND_ROBOT_TRANSFORMATION:
+		OnRemoveCondRobotTransformation();
+		break;
+
 	default:
 		break;
 	}
@@ -2380,6 +2387,11 @@ void CTFPlayerShared::ConditionGameRulesThink( void )
 		if ( pActiveWeapon )
 		{
 			CALL_ATTRIB_HOOK_FLOAT_ON_OTHER( pActiveWeapon, flAttribModScale, mult_health_fromhealers_penalty_active );
+		}
+
+		if (InCond(TF_COND_ROBOT_TRANSFORMATION))
+		{
+			flAttribModScale *= 0.5;
 		}
 
 		float flCurOverheal = (float)m_pOuter->GetHealth() / (float)m_pOuter->GetMaxHealth();
@@ -4019,7 +4031,15 @@ void CTFPlayerShared::OnRemoveTaunting( void )
 			m_hHealLunchbox = provider;
 		}
 	}
-
+	else if (m_bBiteEffectWasApplied)
+	{
+		CTFLunchBox *pWpn = dynamic_cast<CTFLunchBox*>(GetActiveTFWeapon());
+		if (pWpn && pWpn->GetLunchboxType() == LUNCHBOX_ROBO_UNIQUE)
+		{
+			static const float s_fRoboSandwichDuration = 16.0f;
+			AddCond(TF_COND_ROBOT_TRANSFORMATION, s_fRoboSandwichDuration);
+		}
+	}
 	m_bBiteEffectWasApplied = false;
 
 	if ( m_pOuter->m_hTauntItem != NULL )
@@ -7624,6 +7644,32 @@ void CTFPlayerShared::OnRemoveLunchboxHealovertime(void)
 #endif // CLIENT_DLL
 }
 
+void CTFPlayerShared::OnAddCondRobotTransformation(void)
+{
+#ifndef CLIENT_DLL
+	CTFPlayerClass* pPlayerClass = m_pOuter->GetPlayerClass();
+	if (pPlayerClass)
+	{
+		pPlayerClass->SetCustomModel(g_szBotModels[pPlayerClass->GetClassIndex()], true);
+	}
+#endif
+	m_pOuter->TeamFortress_SetSpeed();
+}
+
+void CTFPlayerShared::OnRemoveCondRobotTransformation(void)
+{
+#ifndef CLIENT_DLL
+	CTFPlayerClass* pPlayerClass = m_pOuter->GetPlayerClass();
+	if (pPlayerClass)
+	{
+		if (pPlayerClass->HasCustomModel())
+		{
+			pPlayerClass->SetCustomModel(NULL);
+		}
+	}
+#endif
+	m_pOuter->TeamFortress_SetSpeed();
+}
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
@@ -10931,6 +10977,12 @@ float CTFPlayer::TeamFortress_CalculateMaxSpeed( bool bIgnoreSpecialAbility /*= 
 		}
 	}
 
+	//robots are slow
+	if (m_Shared.InCond(TF_COND_ROBOT_TRANSFORMATION))
+	{
+		maxfbspeed *= 0.75f;
+	}
+
 	if ( playerclass == TF_CLASS_SCOUT )
 	{
 		if ( Weapon_OwnsThisID( TF_WEAPON_PEP_BRAWLER_BLASTER ) )
@@ -11893,7 +11945,7 @@ void CTFPlayer::SetStepSoundTime( stepsoundtimes_t iStepSoundTime, bool bWalking
 const char *CTFPlayer::GetOverrideStepSound( const char *pszBaseStepSoundName )
 {
 
-	if( TFGameRules() && TFGameRules()->IsMannVsMachineMode() && GetTeamNumber() == TF_TEAM_PVE_INVADERS && !IsMiniBoss() && !m_Shared.InCond( TF_COND_DISGUISED ) )
+	if( ((TFGameRules() && TFGameRules()->IsMannVsMachineMode() && GetTeamNumber() == TF_TEAM_PVE_INVADERS && !IsMiniBoss()) || m_Shared.InCond(TF_COND_ROBOT_TRANSFORMATION)) && !m_Shared.InCond( TF_COND_DISGUISED ) )
 	{
 		return "MVM.BotStep";
 	}
@@ -13273,6 +13325,9 @@ int CTFPlayerShared::GetSequenceForDeath( CBaseAnimating* pRagdoll, bool bBurnin
 		if ( m_pOuter && ( m_pOuter->GetTeamNumber() == TF_TEAM_PVE_INVADERS ) )
 			return -1;
 	}
+
+	if (InCond(TF_COND_ROBOT_TRANSFORMATION))
+		return -1;
 
 	int iDeathSeq = -1;
 // 	if ( bBurning )

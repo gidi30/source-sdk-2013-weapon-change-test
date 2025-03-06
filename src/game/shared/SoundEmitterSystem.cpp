@@ -274,26 +274,30 @@ public:
 		// Load in any map specific overrides
 		char scriptfile[ 512 ];
 #if defined( TF_CLIENT_DLL ) || defined( TF_DLL )
+
+		if (filesystem->FileExists("scripts/game_sounds_vo_mvm.txt", "GAME"))
+		{
+			soundemitterbase->AddSoundOverrides("scripts/game_sounds_vo_mvm.txt", true);
+		}
+
+		V_strncpy(scriptfile, "scripts/mvm_level_sounds.txt", sizeof(scriptfile));
+		if (filesystem->FileExists("scripts/mvm_level_sounds.txt", "GAME"))
+		{
+			soundemitterbase->AddSoundOverrides("scripts/mvm_level_sounds.txt", true);
+		}
+
+		g_pTFPlayerClassDataMgr->AddAdditionalPlayerDeathSounds();
+
 		if( V_stristr( pszCleanMapName, "mvm" ) )
 		{
-			V_strncpy( scriptfile, "scripts/mvm_level_sounds.txt", sizeof( scriptfile ) );
-			if ( filesystem->FileExists( "scripts/mvm_level_sounds.txt", "GAME" ) )
-			{
-				soundemitterbase->AddSoundOverrides( "scripts/mvm_level_sounds.txt", true );
-			}
 			if ( filesystem->FileExists( "scripts/mvm_level_sound_tweaks.txt", "GAME" ) )
 			{
 				soundemitterbase->AddSoundOverrides( "scripts/mvm_level_sound_tweaks.txt" );
  			}
-			if ( filesystem->FileExists( "scripts/game_sounds_vo_mvm.txt", "GAME" ) )
-			{
-				soundemitterbase->AddSoundOverrides( "scripts/game_sounds_vo_mvm.txt", true );
-			}
 			if ( filesystem->FileExists( "scripts/game_sounds_vo_mvm_mighty.txt", "GAME" ) )
 			{
 				soundemitterbase->AddSoundOverrides( "scripts/game_sounds_vo_mvm_mighty.txt", true );
 			}
-			g_pTFPlayerClassDataMgr->AddAdditionalPlayerDeathSounds();
 		}
 		else
 		{

@@ -1243,7 +1243,7 @@ void C_TFRagdoll::OnDataChanged( DataUpdateType_t type )
 
 					bool bBlood = true;
 					if ( TFGameRules() && ( TFGameRules()->UseSillyGibs() || 
-											( TFGameRules()->IsMannVsMachineMode() && pPlayer && pPlayer->GetTeamNumber() == TF_TEAM_PVE_INVADERS ) ) )
+											( TFGameRules()->IsMannVsMachineMode() && pPlayer && pPlayer->GetTeamNumber() == TF_TEAM_PVE_INVADERS ) || pPlayer->m_Shared.InCond(TF_COND_ROBOT_TRANSFORMATION) ) )
 					{
 						bBlood = false;
 					}
@@ -5765,7 +5765,7 @@ bool C_TFPlayer::CanLightCigarette( void )
 	}
 
 	// don't light for MvM Spy robots
-	if ( TFGameRules() && TFGameRules()->IsMannVsMachineMode() && GetTeamNumber() == TF_TEAM_PVE_INVADERS )
+	if ( (TFGameRules() && TFGameRules()->IsMannVsMachineMode() && GetTeamNumber() == TF_TEAM_PVE_INVADERS) || m_Shared.InCond(TF_COND_ROBOT_TRANSFORMATION))
 		return false;
 
 	// Don't light if we are invis.
@@ -10508,7 +10508,7 @@ void C_TFPlayer::UpdateKillStreakEffects( int iCount, bool bKillScored /* = fals
 
 void C_TFPlayer::UpdateMVMEyeGlowEffect( bool bVisible )
 {
-	if ( !TFGameRules() || !TFGameRules()->IsMannVsMachineMode() || GetTeamNumber() != TF_TEAM_PVE_INVADERS )
+	if ( (!TFGameRules() || !TFGameRules()->IsMannVsMachineMode() || GetTeamNumber() != TF_TEAM_PVE_INVADERS) && m_Shared.InCond(TF_COND_ROBOT_TRANSFORMATION) )
 	{
 		return;
 	}

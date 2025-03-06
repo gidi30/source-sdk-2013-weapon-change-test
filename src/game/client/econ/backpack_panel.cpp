@@ -1108,7 +1108,7 @@ void CBackpackPanel::AssignItemToPanel( CItemModelPanel *pPanel, int iIndex )
 		{
 			iLastMapItem = it;
 
-			if ( mapItems[it]->IsBaseItem() && !mapItems[it]->IsHidden() )
+			if ( mapItems[it]->IsBaseItem() && !mapItems[it]->IsHidden())
 			{
 				// Instead of linking to this base item definition, link to the definition of what it will become
 				// when we customize it.

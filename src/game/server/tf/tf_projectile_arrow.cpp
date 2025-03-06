@@ -1226,7 +1226,12 @@ void CTFProjectile_HealingBolt::ImpactTeamPlayer( CTFPlayer *pOther )
 	{
 		CALL_ATTRIB_HOOK_FLOAT_ON_OTHER( pActiveWeapon, flHealth, mult_health_fromhealers_penalty_active );
 	}
-	
+
+	if (pOther->m_Shared.InCond(TF_COND_ROBOT_TRANSFORMATION))
+	{
+		flHealth *= 0.5f;
+	}
+
 	int iActualHealed = pOther->TakeHealth( flHealth, DMG_GENERIC );
 	if ( iActualHealed <= 0 )
 		return;

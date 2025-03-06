@@ -907,6 +907,9 @@ private:
 	void OnAddCondParachute( void );
 	void OnRemoveCondParachute( void );
 
+	void OnAddCondRobotTransformation(void);
+	void OnRemoveCondRobotTransformation(void);
+
 	void OnAddHalloweenHellHeal( void );
 	void OnRemoveHalloweenHellHeal( void );
 

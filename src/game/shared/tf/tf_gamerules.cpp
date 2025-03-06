@@ -6430,7 +6430,7 @@ bool CTFGameRules::ApplyOnDamageModifyRules( CTakeDamageInfo &info, CBaseEntity 
 	// Use defense buffs if it's not a backstab or direct crush damage (telefrage, etc.)
 	if ( pVictim && info.GetDamageCustom() != TF_DMG_CUSTOM_BACKSTAB && ( info.GetDamageType() & DMG_CRUSH ) == 0 )
 	{
-		if ( pVictim->m_Shared.InCond( TF_COND_DEFENSEBUFF ) )
+		if ( pVictim->m_Shared.InCond( TF_COND_DEFENSEBUFF ) || pVictim->m_Shared.InCond(TF_COND_ROBOT_TRANSFORMATION) )
 		{
 			// We take no crits of any kind...
 			if( eBonusEffect == kBonusEffect_MiniCrit || eBonusEffect == kBonusEffect_Crit )
@@ -6455,7 +6455,7 @@ bool CTFGameRules::ApplyOnDamageModifyRules( CTakeDamageInfo &info, CBaseEntity 
 				// We take 75% less damage... still take crits
 				flDamage *= 0.25f;
 			}
-			else if ( pVictim->m_Shared.InCond( TF_COND_DEFENSEBUFF ) || pVictim->m_Shared.InCond( TF_COND_DEFENSEBUFF_NO_CRIT_BLOCK ) )
+			else if ( pVictim->m_Shared.InCond( TF_COND_DEFENSEBUFF ) || pVictim->m_Shared.InCond( TF_COND_DEFENSEBUFF_NO_CRIT_BLOCK ) || pVictim->m_Shared.InCond(TF_COND_ROBOT_TRANSFORMATION) )
 			{
 				// defense buffs gives 50% to sentry dmg and 35% from all other sources
 				CObjectSentrygun *pSentry = ( info.GetInflictor() && info.GetInflictor()->IsBaseObject() ) ? dynamic_cast< CObjectSentrygun* >( info.GetInflictor() ) : NULL;
