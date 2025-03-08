@@ -20576,7 +20576,8 @@ void CTFPlayer::PlayerUse ( void )
 			return;
 		}
 	}
-
+	if (IsInAVehicle())
+		return;
 	BaseClass::PlayerUse();
 }
 

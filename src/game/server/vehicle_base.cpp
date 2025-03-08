@@ -394,6 +394,13 @@ CPropVehicleDriveable::~CPropVehicleDriveable( void )
 	DestroyServerVehicle();
 }
 
+void CPropVehicleDriveable::UpdateOnRemove(void)
+{
+	CBasePlayer* pPlayer = dynamic_cast<CBasePlayer*>(GetDriver());
+	if (pPlayer)
+		pPlayer->LeaveVehicle();
+	BaseClass::UpdateOnRemove();
+}
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
@@ -760,6 +767,21 @@ void CPropVehicleDriveable::Think()
 
 			UTIL_Remove( m_hKeepUpright );
 		}
+	}
+	StudioFrameAdvance();
+	// If the enter or exit animation has finished, tell the server vehicle
+	if (IsSequenceFinished() && (m_bExitAnimOn || m_bEnterAnimOn))
+	{
+		if (m_bEnterAnimOn)
+		{
+			m_VehiclePhysics.ReleaseHandbrake();
+			StartEngine();
+
+
+		}
+
+		GetServerVehicle()->HandleEntryExitFinish(m_bExitAnimOn, !(m_bExitAnimOn));
+		
 	}
 }
 

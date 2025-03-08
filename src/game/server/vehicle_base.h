@@ -171,6 +171,7 @@ public:
 	~CPropVehicleDriveable( void );
 
 	virtual void	Precache( void );
+	virtual void	UpdateOnRemove(void);
 	virtual void	Spawn( void );
 	virtual int		Restore( IRestore &restore );
 	virtual void	OnRestore();
