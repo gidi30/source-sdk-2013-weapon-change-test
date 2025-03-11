@@ -1122,6 +1122,7 @@ CTFPlayer::CTFPlayer()
 	m_bRespawning = false;
 
 	m_bAlreadyUsedExtendFreezeThisDeath = false;
+	m_hOwnedVehicle = NULL;
 }
 
 //-----------------------------------------------------------------------------
@@ -8050,8 +8051,44 @@ bool CTFPlayer::ClientCommand( const CCommand &args )
 		}
 		return true;
 	}
+	else if ( FStrEq(pcmd, "jeep") )
+	{
+		//DevMsg("a jeep wouldve spawned now however i didnt actually make the command\n");
+		CreateOrTeleportJeep();
+		return true;
+	}
 
 	return BaseClass::ClientCommand( args );
+}
+
+void CTFPlayer::CreateOrTeleportJeep()
+{
+	Vector vecForward;
+	AngleVectors(this->EyeAngles(), &vecForward);
+	Vector vecOrigin = this->GetAbsOrigin() + Vector(0, 0, 83);
+	QAngle vecAngles(0, this->GetAbsAngles().y - 90, 0);
+	if (!m_hOwnedVehicle)
+	{
+		CPropVehicleDriveable* pJeep = (CPropVehicleDriveable*)CreateEntityByName("prop_vehicle_driveable");
+		if (pJeep)
+		{
+			pJeep->SetAbsOrigin(vecOrigin);
+			pJeep->SetAbsAngles(vecAngles);
+			pJeep->KeyValue("model", "models/buggy.mdl");
+			pJeep->KeyValue("solid", "6");
+			pJeep->KeyValue("targetname", "jeep");
+			pJeep->KeyValue("vehiclescript", "scripts/vehicles/jeep_test.txt");
+			pJeep->KeyValue("spawnflags", "1");
+			DispatchSpawn(pJeep);
+			pJeep->Activate();
+			m_hOwnedVehicle = pJeep;
+		}
+	}
+	if (m_hOwnedVehicle)
+	{
+		//m_hOwnedVehicle->ExitVehicle(VEHICLE_ROLE_DRIVER);
+		m_hOwnedVehicle->Teleport(&vecOrigin, &vecAngles, NULL);
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -8817,6 +8854,9 @@ int CTFPlayer::OnTakeDamage( const CTakeDamageInfo &inputInfo )
 			return 0;
 		}
 	}
+
+	if (info.GetInflictor() == m_hOwnedVehicle)
+		return 0;
 
 	if ( !IsAlive() )
 		return 0;
@@ -13346,6 +13386,9 @@ void CTFPlayer::TeamFortress_ClientDisconnected( void )
 	TFGameRules()->PlayerHistory_AddPlayer( this );
 
 	DuelMiniGame_NotifyPlayerDisconnect( this );
+
+	if (m_hOwnedVehicle)
+		UTIL_Remove(m_hOwnedVehicle);
 
 	// notify the vote controller
 	if ( g_voteControllerGlobal )

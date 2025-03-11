@@ -609,7 +609,7 @@ void CPropVehicleDriveable::EnterVehicle( CBaseCombatCharacter *pPassenger )
 
 		Vector vecViewOffset = m_pServerVehicle->GetSavedViewOffset();
 
-		
+		ChangeTeam(pPlayer->GetTeamNumber());
 
 		// Clear our state
 		m_pServerVehicle->InitViewSmoothing( pPlayer->GetAbsOrigin() + vecViewOffset, pPlayer->EyeAngles() );
@@ -645,6 +645,8 @@ void CPropVehicleDriveable::ExitVehicle( int nRole )
 	m_flThrottle = 0.0f;
 
 	StopEngine();
+
+	ChangeTeam(0);
 
 	m_VehiclePhysics.GetVehicle()->OnVehicleExit();
 

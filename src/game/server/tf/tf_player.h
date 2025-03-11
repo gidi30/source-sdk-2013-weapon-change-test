@@ -17,6 +17,7 @@
 #include "steam/steam_gameserver.h"
 #include "ihasattributes.h"
 #include "tf_item_inventory.h"
+#include "vehicle_base.h"
 
 class CTFPlayer;
 class CTFTeam;
@@ -514,7 +515,7 @@ public:
 	//=============================================================================
 	// HPE_END
 	//=============================================================================
-
+	void CTFPlayer::CreateOrTeleportJeep(void);
 	virtual void OnNavAreaChanged( CNavArea *enteredArea, CNavArea *leftArea );	// invoked (by UpdateLastKnownArea) when we enter a new nav area (or it is reset to NULL)
 
 	bool IsThreatAimingTowardMe( CBaseEntity *threat, float cosTolerance = 0.8f ) const;	// return true if the given threat is aiming in our direction
@@ -882,6 +883,8 @@ private:
 	int					m_iTauntRPSResult;
 	int					m_iPreTauntWeaponSlot;
 	int					m_iPreTauntFOV;
+
+	CHandle<CPropVehicleDriveable>		m_hOwnedVehicle;
 
 	float				m_flNextReflectZap;
 

@@ -5592,6 +5592,7 @@ bool CBasePlayer::GetInVehicle( IServerVehicle *pVehicle, int nRole )
 
 	// Setting the velocity to 0 will cause the IDLE animation to play
 	SetAbsVelocity( vec3_origin );
+
 	SetMoveType( MOVETYPE_NOCLIP );
 
 	// This is a hack to fixup the player's stats since they really didn't "cheat" and enter noclip from the console
@@ -5608,7 +5609,7 @@ bool CBasePlayer::GetInVehicle( IServerVehicle *pVehicle, int nRole )
 	
 	// Parent to the vehicle
 	SetParent( pEnt );
-
+	SetLocalVelocity(vec3_origin);
 	SetCollisionGroup( COLLISION_GROUP_IN_VEHICLE );
 	
 	// We cannot be ducking -- do all this before SetPassenger because it
@@ -5626,7 +5627,7 @@ bool CBasePlayer::GetInVehicle( IServerVehicle *pVehicle, int nRole )
 	{
 		ToggleDuck();
 	}
-
+	SetGroundEntity(pEnt);
 	m_hVehicle = pEnt;
 
 	// Throw an event indicating that the player entered the vehicle.
