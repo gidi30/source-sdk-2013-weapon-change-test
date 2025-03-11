@@ -28,7 +28,7 @@
 	#include "c_world.h"
 	#include "c_team.h"
 	#include "prediction.h"
-
+	#include "c_prop_vehicle.h"
 	#define CTeam C_Team
 
 #else
@@ -36,6 +36,7 @@
 	#include "team.h"
 	#include "bot/tf_bot.h"
 	#include "tf_fx.h"
+	#include "vehicle_base.h"
 #endif
 
 
@@ -1403,7 +1404,7 @@ int CTFGameMovement::CheckStuck( void )
 
 		if ( traceresult.startsolid && traceresult.DidHitNonWorldEntity() )
 		{
-			if ( traceresult.m_pEnt->IsPlayer() )
+			if ( traceresult.m_pEnt->IsPlayer())
 			{
 				// We are stuck in an enemy player. Don't collide with enemies until we are no longer penetrating them.
 				m_isPassingThroughEnemies = true;

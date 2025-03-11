@@ -5571,6 +5571,7 @@ bool CBasePlayer::GetInVehicle( IServerVehicle *pVehicle, int nRole )
 		if ( pWeapon != NULL )
 		{
 			pWeapon->Holster( NULL );
+			HideViewModels();
 		}
 
 #ifndef HL2_DLL
@@ -6226,6 +6227,7 @@ static void CreateJeep( CBasePlayer *pPlayer )
 		pJeep->KeyValue( "solid", "6" );
 		pJeep->KeyValue( "targetname", "jeep" );
 		pJeep->KeyValue( "vehiclescript", "scripts/vehicles/jeep_test.txt" );
+		pJeep->KeyValue("spawnflags", "1");
 		DispatchSpawn( pJeep );
 		pJeep->Activate();
 		pJeep->Teleport( &vecOrigin, &vecAngles, NULL );

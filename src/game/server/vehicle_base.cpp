@@ -514,7 +514,6 @@ void CPropVehicleDriveable::OnRestore( void )
 	}
 }
 
-
 //-----------------------------------------------------------------------------
 // Purpose: Vehicles are permanently oriented off angle for vphysics.
 //-----------------------------------------------------------------------------
@@ -609,6 +608,8 @@ void CPropVehicleDriveable::EnterVehicle( CBaseCombatCharacter *pPassenger )
 		SetNextThink( gpGlobals->curtime );
 
 		Vector vecViewOffset = m_pServerVehicle->GetSavedViewOffset();
+
+		
 
 		// Clear our state
 		m_pServerVehicle->InitViewSmoothing( pPlayer->GetAbsOrigin() + vecViewOffset, pPlayer->EyeAngles() );
@@ -776,11 +777,9 @@ void CPropVehicleDriveable::Think()
 		{
 			m_VehiclePhysics.ReleaseHandbrake();
 			StartEngine();
-
-
 		}
 
-		GetServerVehicle()->HandleEntryExitFinish(m_bExitAnimOn, !(m_bExitAnimOn));
+		GetServerVehicle()->HandleEntryExitFinish(m_bExitAnimOn, false);
 		
 	}
 }
@@ -1030,7 +1029,41 @@ void CPropVehicleDriveable::TraceAttack( const CTakeDamageInfo &info, const Vect
 
 	BaseClass::TraceAttack( info, vecDir, ptr, pAccumulator );
 }
+int CPropVehicleDriveable::OnTakeDamage(const CTakeDamageInfo& inputInfo)
+{
+	//Do scaled up physics damage to the car
+	CTakeDamageInfo info = inputInfo;
+	info.ScaleDamage(25);
 
+	// HACKHACK: Scale up grenades until we get a better explosion/pressure damage system
+	if (inputInfo.GetDamageType() & DMG_BLAST)
+	{
+		info.SetDamageForce(inputInfo.GetDamageForce() * 10);
+	}
+
+	VPhysicsTakeDamage(info);
+
+	// reset the damage
+	info.SetDamage(inputInfo.GetDamage());
+
+
+	//Check to do damage to driver
+	if (GetDriver())
+	{
+		// Never take crush damage
+		if (info.GetDamageType() & DMG_CRUSH)
+			return 0;
+
+		// Scale the damage and mark that we're passing it in so the base player accepts the damage
+		info.ScaleDamage(0.5);
+		info.SetDamageType(info.GetDamageType() | DMG_VEHICLE);
+
+		// Deal the damage to the passenger
+		GetDriver()->TakeDamage(info);
+	}
+
+	return 0;
+}
 //=============================================================================
 // Passenger carrier
 
