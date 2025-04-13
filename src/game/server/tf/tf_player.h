@@ -189,6 +189,7 @@ public:
 
 	void				SaveMe( void );
 
+	virtual bool		GetInVehicle(IServerVehicle* pVehicle, int nRole) OVERRIDE;
 
 	void				FireBullet( CTFWeaponBase *pWpn, const FireBulletsInfo_t &info, bool bDoEffects, int nDamageType, int nCustomDamageType = TF_DMG_CUSTOM_NONE );
 	void				ImpactWaterTrace( trace_t &trace, const Vector &vecStart );

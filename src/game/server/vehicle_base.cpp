@@ -380,7 +380,8 @@ CPropVehicleDriveable::CPropVehicleDriveable( void ) :
 	m_pServerVehicle( NULL ),
 	m_hKeepUpright( NULL ),
 	m_flTurnOffKeepUpright( 0 ),
-	m_flNoImpactDamageTime( 0 )
+	m_flNoImpactDamageTime( 0 ),
+	m_bTouchedGround( false )
 {
 	m_vecEyeExitEndpoint.Init();
 	m_vecGunCrosshair.Init();
@@ -921,14 +922,20 @@ void CPropVehicleDriveable::VPhysicsCollision( int index, gamevcollisionevent_t 
 #endif // HL2_EPISODIC
 //=============================================================================
 
+	// Make sure we don't keep hitting the same entity
+	int otherIndex = !index;
+	CBaseEntity* pHitEntity = pEvent->pEntities[otherIndex];
+
+	if ( !pHitEntity->IsPlayer() && !m_bTouchedGround )
+	{
+		m_bTouchedGround = true;
+	}
+
 	// Don't care if we don't have a driver
 	CBaseCombatCharacter *pDriver = GetDriver() ? GetDriver()->MyCombatCharacterPointer() : NULL;
 	if ( !pDriver )
 		return;
 
-	// Make sure we don't keep hitting the same entity
-	int otherIndex = !index;
-	CBaseEntity *pHitEntity = pEvent->pEntities[otherIndex];
 	if ( pEvent->deltaCollisionTime < 0.5 && (pHitEntity == this) )
 		return;
 

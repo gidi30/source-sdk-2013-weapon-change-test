@@ -1710,8 +1710,10 @@ int CBaseEntity::TakeDamage( const CTakeDamageInfo &inputInfo )
 			if (pVehicle && pVehicle->GetDriver())
 			{
 				info.SetAttacker(pVehicle->GetDriver());
+				info.ScaleDamage(3.f);
 			}
 		}
+
 		if ( ScriptHookEnabled( "OnTakeDamage" ) )
 		{
 			IScriptVM *pVM = g_pScriptVM;

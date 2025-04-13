@@ -204,7 +204,10 @@ public:
 
 	virtual bool IsOverturned( void );
 	virtual bool IsVehicleBodyInWater( void ) { return false; }
-		
+	
+	bool	TouchedGroundSinceTeleport(void) { return m_bTouchedGround; }
+	bool m_bTouchedGround;
+
 	// Engine handling
 	void	StartEngine( void );
 	void	StopEngine( void );

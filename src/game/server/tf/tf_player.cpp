@@ -5795,6 +5795,21 @@ CBaseEntity* CTFPlayer::EntSelectSpawnPoint()
 	return pSpot;
 } 
 
+bool CTFPlayer::GetInVehicle(IServerVehicle* pVehicle, int nRole)
+{
+	if (BaseClass::GetInVehicle(pVehicle, nRole))
+	{
+		// Feign death if we have the right equipment mod.
+		CTFWeaponInvis* pInvisWatch = static_cast<CTFWeaponInvis*>(Weapon_OwnsThisID(TF_WEAPON_INVIS));
+		if (pInvisWatch && ( m_Shared.InCond( TF_COND_STEALTHED ) || m_Shared.IsFeignDeathReady() ) )
+		{
+			pInvisWatch->ActivateInvisibilityWatch();
+		}
+		return true;
+	}
+	return false;
+}
+
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
@@ -8063,15 +8078,18 @@ bool CTFPlayer::ClientCommand( const CCommand &args )
 
 void CTFPlayer::CreateOrTeleportJeep()
 {
+	if (!IsAlive())
+		return;
 	Vector vecForward;
 	AngleVectors(this->EyeAngles(), &vecForward);
-	Vector vecOrigin = this->GetAbsOrigin() + Vector(0, 0, 83);
+	Vector vecOrigin = this->GetAbsOrigin() + Vector(0, 0, 85);
 	QAngle vecAngles(0, this->GetAbsAngles().y - 90, 0);
 	if (!m_hOwnedVehicle)
 	{
 		CPropVehicleDriveable* pJeep = (CPropVehicleDriveable*)CreateEntityByName("prop_vehicle_driveable");
 		if (pJeep)
 		{
+			pJeep->SetAbsVelocity(vec3_origin);
 			pJeep->SetAbsOrigin(vecOrigin);
 			pJeep->SetAbsAngles(vecAngles);
 			pJeep->KeyValue("model", "models/buggy.mdl");
@@ -8084,10 +8102,10 @@ void CTFPlayer::CreateOrTeleportJeep()
 			m_hOwnedVehicle = pJeep;
 		}
 	}
-	if (m_hOwnedVehicle)
+	if (m_hOwnedVehicle && m_hOwnedVehicle.Get()->GetDriver() != this)
 	{
-		//m_hOwnedVehicle->ExitVehicle(VEHICLE_ROLE_DRIVER);
-		m_hOwnedVehicle->Teleport(&vecOrigin, &vecAngles, NULL);
+		m_hOwnedVehicle->m_bTouchedGround = false;
+		m_hOwnedVehicle->Teleport(&vecOrigin, &vecAngles, &vec3_origin);
 	}
 }
 
@@ -8855,8 +8873,15 @@ int CTFPlayer::OnTakeDamage( const CTakeDamageInfo &inputInfo )
 		}
 	}
 
-	if (info.GetInflictor() == m_hOwnedVehicle)
+	if ( info.GetInflictor() && info.GetInflictor()->IsWorld() && info.GetDamageType() & DMG_CRUSH )
 		return 0;
+
+	if ( info.GetInflictor() && info.GetInflictor()->GetServerVehicle() )
+	{
+		CPropVehicleDriveable* pVehicle = dynamic_cast<CPropVehicleDriveable*>(info.GetInflictor());
+		if (pVehicle && !pVehicle->TouchedGroundSinceTeleport())
+			return 0;
+	}
 
 	if ( !IsAlive() )
 		return 0;
