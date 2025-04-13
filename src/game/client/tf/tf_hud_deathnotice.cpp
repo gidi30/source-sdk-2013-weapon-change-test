@@ -991,9 +991,26 @@ void CTFHudDeathNotice::OnGameEvent( IGameEvent *event, int iDeathNoticeMsg )
 				{
 					Q_strncpy( msg.szIcon, "d_ambassador_headshot", ARRAYSIZE( msg.szIcon ) );
 				}
-				else if ( FStrEq( event->GetString( "weapon" ), "huntsman" ) )
+				else if (FStrEq(event->GetString("weapon"), "huntsman"))
 				{
-					Q_strncpy( msg.szIcon, "d_huntsman_headshot", ARRAYSIZE( msg.szIcon ) );
+					int iDmgBits = event->GetInt("damagebits");
+					if (iDmgBits & DMG_IGNITE)
+					{
+						Q_strncpy(msg.szIcon, "d_huntsman_flyingburn_headshot", ARRAYSIZE(msg.szIcon));
+					}
+					else
+					{
+						Q_strncpy(msg.szIcon, "d_huntsman_headshot", ARRAYSIZE(msg.szIcon));
+					}
+
+				}
+				else if (FStrEq(event->GetString("weapon"), "deflect_arrow"))
+				{
+					Q_strncpy(msg.szIcon, "d_deflect_huntsman_headshot", ARRAYSIZE(msg.szIcon));
+				}
+				else if (FStrEq(event->GetString("weapon"), "deflect_huntsman_flyingburn"))
+				{
+					Q_strncpy(msg.szIcon, "d_deflect_arrow_burn_headshot", ARRAYSIZE(msg.szIcon));
 				}
 				else
 				{
@@ -1027,8 +1044,11 @@ void CTFHudDeathNotice::OnGameEvent( IGameEvent *event, int iDeathNoticeMsg )
 			break;
 
 		case TF_DMG_CUSTOM_FLYINGBURN:
-			// special-case if the player is killed from a burning arrow as the killing blow
-			Q_strncpy( msg.szIcon, "d_huntsman_flyingburn", ARRAYSIZE( msg.szIcon ) );
+			if (!FStrEq(event->GetString("weapon"), "deflect_huntsman_flyingburn"))
+			{
+				// special-case if the player is killed from a burning arrow as the killing blow
+				Q_strncpy(msg.szIcon, "d_huntsman_flyingburn", ARRAYSIZE(msg.szIcon));
+			}
 			msg.wzInfoText[0] = 0;
 			break;
 

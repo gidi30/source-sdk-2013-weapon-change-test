@@ -469,10 +469,13 @@ void CTFHudPlayerClass::UpdateModelPanel()
 			nClass = pPlayer->GetPlayerClass()->GetClassIndex();
 			nTeam = pPlayer->GetTeamNumber();
 
-			CTFWeaponBase *pEnt = dynamic_cast< CTFWeaponBase* >( pPlayer->GetEntityForLoadoutSlot( nItemSlot ) );
-			if ( pEnt )
+			for (int wpn = 0; wpn < CLASS_LOADOUT_POSITION_COUNT; wpn++)
 			{
-				pWeapon = pEnt->GetAttributeContainer()->GetItem();
+				CTFWeaponBase* pEnt = dynamic_cast<CTFWeaponBase*>(pPlayer->GetEntityForLoadoutSlot(wpn));
+				if (pEnt)
+				{
+					m_pPlayerModelPanel->AddCarriedItem(pEnt->GetAttributeContainer()->GetItem());
+				}
 			}
 		}
 
