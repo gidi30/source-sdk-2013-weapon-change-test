@@ -215,6 +215,10 @@ void SharedVehicleViewSmoothing(CBasePlayer *pPlayer,
 								ViewSmoothingData_t *pData, 
 								float *pFOV )
 {
+	//shouldnt happen but it seems to crash sometimes
+	if (!pPlayer)
+		return;
+
 	int eyeAttachmentIndex = pData->pVehicle->LookupAttachment( "vehicle_driver_eyes" );
 	matrix3x4_t vehicleEyePosToWorld;
 	Vector vehicleEyeOrigin;

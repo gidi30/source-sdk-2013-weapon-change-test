@@ -448,6 +448,8 @@ void CTFHudPlayerClass::UpdateModelPanel()
 		int nItemSlot = m_nLoadoutPosition;
 		CEconItemView *pWeapon = NULL;
 
+		m_pPlayerModelPanel->ClearCarriedItems();
+
 		bool bDisguised = pPlayer->m_Shared.InCond( TF_COND_DISGUISED );
 		if ( bDisguised )
 		{
@@ -479,14 +481,14 @@ void CTFHudPlayerClass::UpdateModelPanel()
 			}
 		}
 
-		m_pPlayerModelPanel->ClearCarriedItems();
+
 		m_pPlayerModelPanel->SetToPlayerClass( nClass );
 		m_pPlayerModelPanel->SetTeam( nTeam );
 
-		if ( pWeapon )
-		{
-			m_pPlayerModelPanel->AddCarriedItem( pWeapon );
-		}
+		//if ( pWeapon )
+		//{
+		//	m_pPlayerModelPanel->AddCarriedItem( pWeapon );
+		//}
 
 		for ( int wbl = pPlayer->GetNumWearables()-1; wbl >= 0; wbl-- )
 		{
