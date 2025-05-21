@@ -466,6 +466,8 @@ void CPropVehicleDriveable::Spawn( void )
 
 	BaseClass::Spawn();
 
+	AddFlag(FL_GRENADE);
+
 	m_flMinimumSpeedToEnterExit = 0;
 	m_takedamage = DAMAGE_EVENTS_ONLY;
 	m_bEngineLocked = false;
@@ -564,7 +566,8 @@ void CPropVehicleDriveable::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, 
 
 	ResetUseKey( pPlayer );
 
-	m_pServerVehicle->HandlePassengerEntry( pPlayer, (value>0) );
+	//the second parameter used to be "value > 0"
+	m_pServerVehicle->HandlePassengerEntry( pPlayer, true );
 }
 
 //-----------------------------------------------------------------------------
@@ -611,6 +614,15 @@ void CPropVehicleDriveable::EnterVehicle( CBaseCombatCharacter *pPassenger )
 		Vector vecViewOffset = m_pServerVehicle->GetSavedViewOffset();
 
 		ChangeTeam(pPlayer->GetTeamNumber());
+
+		CBaseServerVehicle* pServerVehicle = dynamic_cast<CBaseServerVehicle*>(GetServerVehicle());
+		if (pServerVehicle)
+		{
+			if (pServerVehicle->GetPassenger(VEHICLE_ROLE_DRIVER))
+			{
+				UTIL_HudHintText(m_hPlayer, "#Valve_Hint_JeepKeys");
+			}
+		}
 
 		// Clear our state
 		m_pServerVehicle->InitViewSmoothing( pPlayer->GetAbsOrigin() + vecViewOffset, pPlayer->EyeAngles() );
@@ -772,6 +784,10 @@ void CPropVehicleDriveable::Think()
 			UTIL_Remove( m_hKeepUpright );
 		}
 	}
+	if (m_hPlayer)
+	{
+		m_hPlayer->SetLocalVelocity(vec3_origin);
+	}
 	StudioFrameAdvance();
 	// If the enter or exit animation has finished, tell the server vehicle
 	if (IsSequenceFinished() && (m_bExitAnimOn || m_bEnterAnimOn))
@@ -827,16 +843,36 @@ bool CPropVehicleDriveable::CanEnterVehicle( CBaseEntity *pEntity )
 	// Only drivers are supported
 	Assert( pEntity && pEntity->IsPlayer() );
 
+	CBasePlayer* pPlayer = dynamic_cast<CBasePlayer*>(pEntity);
+
 	// Prevent entering if the vehicle's being driven by an NPC
 	if ( GetDriver() && GetDriver() != pEntity )
+	{
+		ClientPrint(pPlayer, HUD_PRINTCENTER, "#Cannot_Enter_Vehicle_Other_Driver");
 		return false;
+	}
 
 	// Can't enter if we're upside-down
-	if ( IsOverturned() )
+	if (IsOverturned())
+	{
+		ClientPrint(pPlayer, HUD_PRINTCENTER, "#Cannot_Enter_Vehicle_Overturned");
 		return false;
+	}
 
 	// Prevent entering if the vehicle's locked, or if it's moving too fast.
-	return ( !m_bLocked && (m_nSpeed <= m_flMinimumSpeedToEnterExit) );
+	if (m_bLocked)
+	{
+		ClientPrint(pPlayer, HUD_PRINTCENTER, "#Cannot_Enter_Vehicle_Locked");
+		return false;
+	}
+
+	if (!(m_nSpeed <= m_flMinimumSpeedToEnterExit))
+	{
+		ClientPrint(pPlayer, HUD_PRINTCENTER, "#Cannot_Enter_Vehicle_Too_Fast");
+		return false;
+	}
+
+	return true;
 }
 
 //-----------------------------------------------------------------------------
@@ -845,7 +881,22 @@ bool CPropVehicleDriveable::CanEnterVehicle( CBaseEntity *pEntity )
 bool CPropVehicleDriveable::CanExitVehicle( CBaseEntity *pEntity )
 {
 	// Prevent exiting if the vehicle's locked, or if it's moving too fast.
-	return ( !m_bEnterAnimOn && !m_bExitAnimOn && !m_bLocked && (m_nSpeed <= m_flMinimumSpeedToEnterExit) );
+
+	CBasePlayer* pPlayer = dynamic_cast<CBasePlayer*>(pEntity);
+
+	if (m_bLocked)
+	{
+		ClientPrint(pPlayer, HUD_PRINTCENTER, "#Cannot_Enter_Vehicle_Locked");
+		return false;
+	}
+
+	if (!(m_nSpeed <= m_flMinimumSpeedToEnterExit))
+	{
+		ClientPrint(pPlayer, HUD_PRINTCENTER, "#Cannot_Enter_Vehicle_Too_Fast");
+		return false;
+	}
+
+	return ( !m_bEnterAnimOn && !m_bExitAnimOn );
 }
 
 //-----------------------------------------------------------------------------
@@ -1060,7 +1111,7 @@ int CPropVehicleDriveable::OnTakeDamage(const CTakeDamageInfo& inputInfo)
 	if (GetDriver())
 	{
 		// Never take crush damage
-		if (info.GetDamageType() & DMG_CRUSH)
+		if (info.GetDamageType() & DMG_CRUSH | DMG_FALL )
 			return 0;
 
 		// Scale the damage and mark that we're passing it in so the base player accepts the damage

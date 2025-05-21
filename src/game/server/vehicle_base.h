@@ -184,6 +184,12 @@ public:
 	virtual void	TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr, CDmgAccumulator *pAccumulator );
 	virtual void	Event_KilledOther( CBaseEntity *pVictim, const CTakeDamageInfo &info );
 	virtual int		OnTakeDamage(const CTakeDamageInfo& info);
+	virtual bool IsDeflectable() { return true; }
+
+	virtual unsigned int PhysicsSolidMaskForEntity(void) const
+	{
+		return BaseClass::PhysicsSolidMaskForEntity() | CONTENTS_PLAYERCLIP;
+	}
 
 	// Vehicle handling
 	virtual void	VPhysicsCollision( int index, gamevcollisionevent_t *pEvent );

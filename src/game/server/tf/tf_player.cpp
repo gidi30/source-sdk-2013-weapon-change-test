@@ -8879,7 +8879,7 @@ int CTFPlayer::OnTakeDamage( const CTakeDamageInfo &inputInfo )
 	if ( info.GetInflictor() && info.GetInflictor()->GetServerVehicle() )
 	{
 		CPropVehicleDriveable* pVehicle = dynamic_cast<CPropVehicleDriveable*>(info.GetInflictor());
-		if (pVehicle && !pVehicle->TouchedGroundSinceTeleport())
+		if (pVehicle && !pVehicle->TouchedGroundSinceTeleport() && pVehicle == m_hOwnedVehicle)
 			return 0;
 	}
 

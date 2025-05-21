@@ -5910,6 +5910,20 @@ bool CTFWeaponBase::DeflectEntity( CBaseEntity *pTarget, CTFPlayer *pOwner, Vect
 	Vector vecEye = pOwner->EyePosition();
 	Vector vecVel = pTarget->GetAbsVelocity();
 
+	CPropVehicleDriveable* pVehicle = dynamic_cast<CPropVehicleDriveable*>(pTarget);
+
+	if (pVehicle)
+	{
+		IPhysicsObject* pPhysicsObject = pTarget->VPhysicsGetObject();
+		if (pPhysicsObject && pTarget->CollisionProp())
+		{
+			Vector vecDir = pTarget->WorldSpaceCenter() - vecEye;
+			VectorNormalize(vecDir);
+			float flVel = 5000.0f * CTFWeaponBase::DeflectionForce(pTarget->CollisionProp()->OBBSize(), 90, 60.0f);
+			pPhysicsObject->ApplyForceOffset(vecDir * flVel, vecEye);
+		}
+		return true;
+	}
 	// apply an impulse instead if this is a prop physics object
 	if ( FClassnameIs( pTarget, "prop_physics" ) )
 	{
