@@ -1089,37 +1089,37 @@ void CPropVehicleDriveable::TraceAttack( const CTakeDamageInfo &info, const Vect
 
 	BaseClass::TraceAttack( info, vecDir, ptr, pAccumulator );
 }
-int CPropVehicleDriveable::OnTakeDamage(const CTakeDamageInfo& inputInfo)
+int CPropVehicleDriveable::OnTakeDamage( const CTakeDamageInfo &inputInfo )
 {
 	//Do scaled up physics damage to the car
 	CTakeDamageInfo info = inputInfo;
-	info.ScaleDamage(25);
+	info.ScaleDamage( 25 );
 
 	// HACKHACK: Scale up grenades until we get a better explosion/pressure damage system
-	if (inputInfo.GetDamageType() & DMG_BLAST)
+	if ( inputInfo.GetDamageType() & DMG_BLAST )
 	{
-		info.SetDamageForce(inputInfo.GetDamageForce() * 10);
+		info.SetDamageForce( inputInfo.GetDamageForce() * 10 );
 	}
 
-	VPhysicsTakeDamage(info);
+	VPhysicsTakeDamage( info );
 
 	// reset the damage
-	info.SetDamage(inputInfo.GetDamage());
+	info.SetDamage( inputInfo.GetDamage() );
 
 
 	//Check to do damage to driver
-	if (GetDriver())
+	if ( GetDriver() )
 	{
 		// Never take crush damage
-		if (info.GetDamageType() & DMG_CRUSH | DMG_FALL )
+		if ( info.GetDamageType() & ( DMG_CRUSH | DMG_FALL ) )
 			return 0;
 
 		// Scale the damage and mark that we're passing it in so the base player accepts the damage
-		info.ScaleDamage(0.5);
-		info.SetDamageType(info.GetDamageType() | DMG_VEHICLE);
+		info.ScaleDamage( 0.5 );
+		info.SetDamageType( info.GetDamageType() | DMG_VEHICLE );
 
 		// Deal the damage to the passenger
-		GetDriver()->TakeDamage(info);
+		GetDriver()->TakeDamage( info );
 	}
 
 	return 0;
