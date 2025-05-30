@@ -991,26 +991,9 @@ void CTFHudDeathNotice::OnGameEvent( IGameEvent *event, int iDeathNoticeMsg )
 				{
 					Q_strncpy( msg.szIcon, "d_ambassador_headshot", ARRAYSIZE( msg.szIcon ) );
 				}
-				else if (FStrEq(event->GetString("weapon"), "huntsman"))
+				else if ( FStrEq( event->GetString( "weapon" ), "huntsman" ) )
 				{
-					int iDmgBits = event->GetInt("damagebits");
-					if (iDmgBits & DMG_IGNITE)
-					{
-						Q_strncpy(msg.szIcon, "d_huntsman_flyingburn_headshot", ARRAYSIZE(msg.szIcon));
-					}
-					else
-					{
-						Q_strncpy(msg.szIcon, "d_huntsman_headshot", ARRAYSIZE(msg.szIcon));
-					}
-
-				}
-				else if (FStrEq(event->GetString("weapon"), "deflect_arrow"))
-				{
-					Q_strncpy(msg.szIcon, "d_deflect_huntsman_headshot", ARRAYSIZE(msg.szIcon));
-				}
-				else if (FStrEq(event->GetString("weapon"), "deflect_huntsman_flyingburn"))
-				{
-					Q_strncpy(msg.szIcon, "d_deflect_arrow_burn_headshot", ARRAYSIZE(msg.szIcon));
+					Q_strncpy( msg.szIcon, "d_huntsman_headshot", ARRAYSIZE( msg.szIcon ) );
 				}
 				else
 				{
